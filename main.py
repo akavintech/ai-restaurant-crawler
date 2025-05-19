@@ -100,17 +100,27 @@ RESTAURANT_URLS = [
     # "http://facebook.com/RoseGardenRedding",
     # "http://jugjugsportsbar.com/",
     # "http://194eatery.com/",
-
     # "http://cafe-delicias.com/",
     # "http://eurekarestaurantgroup.com/blog/locations/hawthorne-airport/",
-    # "http://gayroxpress.square.site/",
-    # "http://perkos.com/",
+    # "http://gayroxpress.square.site/"
+    # "http://greenolivela.com/our-menu.html",
+    # "http://perkos.com/"    
     # "http://troygreek.com/",
-    "https://www.thephocadaogrill.com/",
-    "http://hanasushi.menu11.com/",
-    "https://www.wanaaha.com/dining/tukanovie-restaurant/",
-    "http://www.lazysusanchinese.com/"
+    # "https://locations.chipotle.com/ca/alameda/2314-s-shore-ctr?utm_source=google&utm_medium=yext&utm_campaign=yext_listings"
+    # "https://www.thephocadaogrill.com/",
+    # "http://hanasushi.menu11.com/",
+    # "http://bigalspizzeria.com/".
+    # "http://dragonhousemoval.com/"
+    # "https://laprimaveramex.com/",
+    "https://www.wanaaha.com/dining/tukanovie-restaurant/"
+    # "https://locations.pizzahut.com/ca/banning/1860-w-ramsey-st?utm_medium=organic&utm_source=local&utm_campaign=googlelistings&utm_content=website&utm_term=298254",
+    # "http://nasaspacebar.com/",
+    # "http://www.lazysusanchinese.com/"
 ]
+
+# Initialize global token counters,
+total_input_tokens = 0
+total_output_tokens = 0
 
 async def enhance_menu_items_with_ingredients(restaurant: Restaurant, llm: ChatGoogleGenerativeAI) -> Restaurant:
     """Enhance menu items with inferred ingredients if not present."""
@@ -147,25 +157,64 @@ async def process_restaurant(website_url: str, llm: ChatGoogleGenerativeAI, brow
         1. Look for food items in:
            - Menu section if available
            - Images containing food items
+           - PDF files containing menus
            - Any section describing food offerings
         2. For each food item found, collect:
            - Name of the item
            - Price
            - Description
            - Ingredients (if available in the menu or description)
-        3. Important restrictions:
-           - DO NOT click on any "Order Online" buttons or links
+        3. Important instructions:
+           - If you find a PDF menu, download and analyze its contents
+           - For multi-page PDFs:
+             * Set a 30-second timeout for PDF processing
+             * If PDF takes too long to load or process, skip it and try other methods
+             * Navigate through pages quickly, don't wait for full rendering
+             * If PDF is too large or complex, note this and move on
+             * Use page navigation controls to move through pages
+             * Extract content from each page
+             * Look for page numbers or navigation indicators
+             * Check for table of contents if available
+           - For images containing menus, use OCR to extract text
+           - If a menu is in an image format, describe what you see
+           - Look for "Menu", "Food", "Dining" sections
+           - Check for downloadable menu PDFs
+        4. Important restrictions:
            - Stay within the main website
-        4. Search all relevant pages but avoid external ordering systems
+           - Only download PDFs from the main website domain
+           - If a PDF is causing issues, skip it and try alternative methods
         5. For ingredients:
            - If ingredients are explicitly listed in the menu, use those
            - If ingredients are mentioned in the description, extract them
            - If no ingredients are found, leave the ingredients list empty (we'll infer them later)
+        6. Special handling:
+           - If you find a PDF menu, note its location and content
+           - For multi-page PDFs:
+             * Document which page each item was found on
+             * Note any section headers or categories
+             * Track page numbers for reference
+             * If PDF processing is slow, switch to alternative methods
+           - For image-based menus, describe the items you can see
+           - If menu is in a gallery format, check all images
+        7. Last resort strategy:
+           - If no menu items are found through normal navigation
+           - Click on "Order Now" or "Order Online" section
+           - Extract menu items from the ordering interface
+           - This is ONLY to be used if no menu items are found through other methods
+        8. Error handling:
+           - If any method (PDF, image, etc.) takes too long, skip it
+           - Document which methods were attempted and why they failed
+           - Always have a fallback method ready
+           - Don't get stuck on any single method for more than 30 seconds
         """
         
         # Estimate input tokens (task prompt)
         input_tokens = estimate_tokens(task_prompt)
         print(f"Input tokens: {input_tokens}")
+        
+        # Update total input tokens
+        global total_input_tokens
+        total_input_tokens += input_tokens
         
         agent = Agent(
             task=task_prompt,
@@ -181,6 +230,10 @@ async def process_restaurant(website_url: str, llm: ChatGoogleGenerativeAI, brow
         # Estimate output tokens (result)
         output_tokens = estimate_tokens(str(final_result))
         print(f"Output tokens: {output_tokens}")
+        
+        # Update total output tokens
+        global total_output_tokens
+        total_output_tokens += output_tokens
         
         print("\nFinal Result:")
         print(final_result)
@@ -244,6 +297,19 @@ async def main():
         print(f"Total restaurants processed: {len(RESTAURANT_URLS)}")
         print(f"Successful: {len(successful_urls)}")
         print(f"Failed: {len(failed_urls)}")
+        print(f"Total input tokens used: {total_input_tokens}")
+        print(f"Total output tokens used: {total_output_tokens}")
+        print(f"Total tokens used: {total_input_tokens + total_output_tokens}")
+        
+        # Calculate and print averages
+        if len(successful_urls) > 0:
+            avg_input_tokens = total_input_tokens / len(successful_urls)
+            avg_output_tokens = total_output_tokens / len(successful_urls)
+            avg_total_tokens = (total_input_tokens + total_output_tokens) / len(successful_urls)
+            print(f"\nAverage tokens per successful restaurant:")
+            print(f"Average input tokens: {avg_input_tokens:.2f}")
+            print(f"Average output tokens: {avg_output_tokens:.2f}")
+            print(f"Average total tokens: {avg_total_tokens:.2f}")
         
         if failed_urls:
             print("\nFailed URLs:")
