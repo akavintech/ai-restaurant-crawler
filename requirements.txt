@@ -1,7 +1,7 @@
 langchain-google-genai
 python-dotenv
 pydantic
-tiktoken
+tiktoken 
 playwright
 beautifulsoup4
 requests

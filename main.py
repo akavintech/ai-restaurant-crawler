@@ -91,31 +91,31 @@ print(f"Skip verification: {os.environ.get('SKIP_LLM_API_KEY_VERIFICATION')}")
 
 # Add this before the main function
 RESTAURANT_URLS = [
-    # "http://adalbertosmexicanrestaurant.com/",
-    # "http://cheveybarbacha.com/",
-    # "http://duffsdoggz.com/",
-    # "http://heirloom-pizzeria.com/",
-    # "http://luckygreekburgers.com/",
-    # "https://www.zovs.com/",
-    # "http://facebook.com/RoseGardenRedding",
-    # "http://jugjugsportsbar.com/",
-    # "http://194eatery.com/",
-    # "http://cafe-delicias.com/",
-    # "http://eurekarestaurantgroup.com/blog/locations/hawthorne-airport/",
-    # "http://gayroxpress.square.site/"
-    # "http://greenolivela.com/our-menu.html",
-    # "http://perkos.com/"    
-    # "http://troygreek.com/",
-    # "https://locations.chipotle.com/ca/alameda/2314-s-shore-ctr?utm_source=google&utm_medium=yext&utm_campaign=yext_listings"
-    # "https://www.thephocadaogrill.com/",
-    # "http://hanasushi.menu11.com/",
-    # "http://bigalspizzeria.com/".
-    # "http://dragonhousemoval.com/"
-    # "https://laprimaveramex.com/",
-    "https://www.wanaaha.com/dining/tukanovie-restaurant/"
-    # "https://locations.pizzahut.com/ca/banning/1860-w-ramsey-st?utm_medium=organic&utm_source=local&utm_campaign=googlelistings&utm_content=website&utm_term=298254",
-    # "http://nasaspacebar.com/",
-    # "http://www.lazysusanchinese.com/"
+    "http://adalbertosmexicanrestaurant.com/",
+    "http://cheveybarbacha.com/",
+    "http://duffsdoggz.com/",
+    "http://heirloom-pizzeria.com/",
+    "http://luckygreekburgers.com/",
+    "https://www.zovs.com/",
+    "http://facebook.com/RoseGardenRedding",
+    "http://jugjugsportsbar.com/",
+    "http://194eatery.com/",
+    "http://cafe-delicias.com/",
+    "http://eurekarestaurantgroup.com/blog/locations/hawthorne-airport/",
+    "http://gayroxpress.square.site/"
+    "http://greenolivela.com/our-menu.html",
+    "http://perkos.com/"    
+    "http://troygreek.com/",
+    "https://locations.chipotle.com/ca/alameda/2314-s-shore-ctr?utm_source=google&utm_medium=yext&utm_campaign=yext_listings"
+    "https://www.thephocadaogrill.com/",
+    "http://hanasushi.menu11.com/",
+    "http://bigalspizzeria.com/".
+    "http://dragonhousemoval.com/"
+    "https://laprimaveramex.com/",
+    "https://www.wanaaha.com/dining/tukanovie-restaurant/",
+    "https://locations.pizzahut.com/ca/banning/1860-w-ramsey-st?utm_medium=organic&utm_source=local&utm_campaign=googlelistings&utm_content=website&utm_term=298254",
+    "http://nasaspacebar.com/",
+    "http://www.lazysusanchinese.com/"
 ]
 
 # Initialize global token counters,
