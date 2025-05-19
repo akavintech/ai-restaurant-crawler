@@ -202,7 +202,7 @@ async def process_restaurant(website_url: str, llm: ChatGoogleGenerativeAI, brow
             final_result = await enhance_menu_items_with_ingredients(final_result, llm)
             
             # Save results to JSON file
-            output_file = f"{final_result.name.lower().replace(' ', '_')}_menu.json"
+            output_file = f"output/menu_json/{final_result.name.lower().replace(' ', '_')}_menu.json"
             save_restaurant_to_json(final_result, output_file)
             print(f"\nResults saved to {output_file}")
             return True
