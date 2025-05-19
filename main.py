@@ -91,31 +91,31 @@ print(f"Skip verification: {os.environ.get('SKIP_LLM_API_KEY_VERIFICATION')}")
 
 # Add this before the main function
 RESTAURANT_URLS = [
-    "http://adalbertosmexicanrestaurant.com/",
-    "http://cheveybarbacha.com/",
-    "http://duffsdoggz.com/",
-    "http://heirloom-pizzeria.com/",
-    "http://luckygreekburgers.com/",
-    "https://www.zovs.com/",
-    "http://facebook.com/RoseGardenRedding",
-    "http://jugjugsportsbar.com/",
-    "http://194eatery.com/",
-    "http://cafe-delicias.com/",
-    "http://eurekarestaurantgroup.com/blog/locations/hawthorne-airport/",
-    "http://gayroxpress.square.site/"
-    "http://greenolivela.com/our-menu.html",
-    "http://perkos.com/"    
-    "http://troygreek.com/",
-    "https://locations.chipotle.com/ca/alameda/2314-s-shore-ctr?utm_source=google&utm_medium=yext&utm_campaign=yext_listings"
-    "https://www.thephocadaogrill.com/",
-    "http://hanasushi.menu11.com/",
-    "http://bigalspizzeria.com/".
+    # "http://adalbertosmexicanrestaurant.com/",
+    # "http://cheveybarbacha.com/",
+    # "http://duffsdoggz.com/",
+    # "http://heirloom-pizzeria.com/",
+    # "http://luckygreekburgers.com/",
+    # "https://www.zovs.com/",
+    # "http://facebook.com/RoseGardenRedding",
+    # "http://jugjugsportsbar.com/",
+    # "http://194eatery.com/",
+    # "http://cafe-delicias.com/",
+    # "http://eurekarestaurantgroup.com/blog/locations/hawthorne-airport/",
+    # "http://gayroxpress.square.site/"
+    # "http://greenolivela.com/our-menu.html",
+    # "http://perkos.com/"    
+    # "http://troygreek.com/",
+    # "https://locations.chipotle.com/ca/alameda/2314-s-shore-ctr?utm_source=google&utm_medium=yext&utm_campaign=yext_listings"
+    # "https://www.thephocadaogrill.com/",
+    # "http://hanasushi.menu11.com/",
+    # "http://bigalspizzeria.com/",
     "http://dragonhousemoval.com/"
-    "https://laprimaveramex.com/",
-    "https://www.wanaaha.com/dining/tukanovie-restaurant/",
-    "https://locations.pizzahut.com/ca/banning/1860-w-ramsey-st?utm_medium=organic&utm_source=local&utm_campaign=googlelistings&utm_content=website&utm_term=298254",
-    "http://nasaspacebar.com/",
-    "http://www.lazysusanchinese.com/"
+    # "https://laprimaveramex.com/",
+    # "https://www.wanaaha.com/dining/tukanovie-restaurant/"
+    # "https://locations.pizzahut.com/ca/banning/1860-w-ramsey-st?utm_medium=organic&utm_source=local&utm_campaign=googlelistings&utm_content=website&utm_term=298254",
+    # "http://nasaspacebar.com/",
+    # "http://www.lazysusanchinese.com/"
 ]
 
 # Initialize global token counters,
@@ -165,16 +165,21 @@ async def process_restaurant(website_url: str, llm: ChatGoogleGenerativeAI, brow
            - Description
            - Ingredients (if available in the menu or description)
         3. Important instructions:
-           - If you find a PDF menu, download and analyze its contents
+           - If you find a PDF menu:
+             * Click the PDF link to open it
+             * Wait 5 seconds for the new tab to open
+             * If tab doesn't open in 5 seconds, try alternative methods
+             * Once tab is open, switch to it immediately
+             * If switching fails after 3 attempts, go back to main tab
+             * Use the browser's PDF viewer to navigate pages
+             * Try to select and copy text from each page
+             * If text selection doesn't work, describe what you see
            - For multi-page PDFs:
-             * Set a 30-second timeout for PDF processing
-             * If PDF takes too long to load or process, skip it and try other methods
-             * Navigate through pages quickly, don't wait for full rendering
-             * If PDF is too large or complex, note this and move on
-             * Use page navigation controls to move through pages
-             * Extract content from each page
-             * Look for page numbers or navigation indicators
-             * Check for table of contents if available
+             * After switching to the PDF tab, use the viewer's navigation
+             * Try to select and copy text from each page
+             * If text selection fails, describe the visible content
+             * Look for any text that can be highlighted
+             * Note any section headers or categories you can see
            - For images containing menus, use OCR to extract text
            - If a menu is in an image format, describe what you see
            - Look for "Menu", "Food", "Dining" sections
@@ -182,7 +187,9 @@ async def process_restaurant(website_url: str, llm: ChatGoogleGenerativeAI, brow
         4. Important restrictions:
            - Stay within the main website
            - Only download PDFs from the main website domain
-           - If a PDF is causing issues, skip it and try alternative methods
+           - If a PDF is causing issues, try alternative methods
+           - Remember to switch back to the main tab after processing PDF
+           - Don't wait more than 5 seconds for any tab operation
         5. For ingredients:
            - If ingredients are explicitly listed in the menu, use those
            - If ingredients are mentioned in the description, extract them
@@ -190,10 +197,10 @@ async def process_restaurant(website_url: str, llm: ChatGoogleGenerativeAI, brow
         6. Special handling:
            - If you find a PDF menu, note its location and content
            - For multi-page PDFs:
-             * Document which page each item was found on
-             * Note any section headers or categories
-             * Track page numbers for reference
-             * If PDF processing is slow, switch to alternative methods
+             * After switching to the PDF tab, try to select and copy text
+             * If text selection fails, describe what you can see
+             * Note any visible section headers or categories
+             * Document items you can see even if you can't copy text
            - For image-based menus, describe the items you can see
            - If menu is in a gallery format, check all images
         7. Last resort strategy:
@@ -202,10 +209,12 @@ async def process_restaurant(website_url: str, llm: ChatGoogleGenerativeAI, brow
            - Extract menu items from the ordering interface
            - This is ONLY to be used if no menu items are found through other methods
         8. Error handling:
-           - If any method (PDF, image, etc.) takes too long, skip it
+           - If any method takes too long, skip it
            - Document which methods were attempted and why they failed
            - Always have a fallback method ready
            - Don't get stuck on any single method for more than 30 seconds
+           - If PDF processing fails, switch back to main tab and try alternatives
+           - If tab switching fails after 3 attempts, try alternative methods
         """
         
         # Estimate input tokens (task prompt)
